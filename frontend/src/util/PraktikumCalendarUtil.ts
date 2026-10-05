@@ -1,9 +1,6 @@
 import type { FullPraktikumDTO } from "@/api/generated/api-spec/models";
 
-
-
 import { toDateKey } from "@/util/formatter";
-
 
 export function getCalendarEvents(
   praktikum: FullPraktikumDTO | undefined,

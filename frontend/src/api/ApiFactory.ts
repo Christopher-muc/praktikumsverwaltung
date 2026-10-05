@@ -4,7 +4,6 @@ import { BASE_API_PATH, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useValidationStore } from "@/stores/validation";
 
-
 type ApiCtor<T extends BaseAPI> = new (config: Configuration) => T;
 
 interface ValidationErrorResponse {
@@ -62,16 +61,16 @@ async function handleErrorResponse(response: Response) {
   try {
     const body = (await response.clone().json()) as ValidationErrorResponse;
 
-      /*
-       * FieldErrors werden NICHT in der Snackbar angezeigt.
-       * Sie werden für die Formularfelder gespeichert.
-       */
-      validationStore.setFieldErrors(body.errors ?? {});
+    /*
+     * FieldErrors werden NICHT in der Snackbar angezeigt.
+     * Sie werden für die Formularfelder gespeichert.
+     */
+    validationStore.setFieldErrors(body.errors ?? {});
 
-      /*
-       * Object-/GlobalErrors gehören in die Snackbar.
-       */
-      const globalMessages = body.globalErrors ?? [];
+    /*
+     * Object-/GlobalErrors gehören in die Snackbar.
+     */
+    const globalMessages = body.globalErrors ?? [];
 
     for (const message of globalMessages) {
       snackbarStore.push({

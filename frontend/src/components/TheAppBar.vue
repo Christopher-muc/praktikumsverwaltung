@@ -78,8 +78,8 @@ async function search() {
     path: "/students",
     query: searchQuery
       ? {
-        search: searchQuery,
-      }
+          search: searchQuery,
+        }
       : {},
   });
 }

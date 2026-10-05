@@ -1,9 +1,5 @@
 import type { SimpleStudentDTO } from "@/api/generated/api-spec/models";
 
-
-
-
-
 export function filterStudents(
   students: SimpleStudentDTO[],
   searchQuery: unknown

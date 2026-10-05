@@ -99,14 +99,11 @@ watch(
       return;
     }
 
-    beginnZeit.value =
-      activity.taetigkeitenblockID?.beginnZeit ?? "";
+    beginnZeit.value = activity.taetigkeitenblockID?.beginnZeit ?? "";
 
-    endeZeit.value =
-      activity.taetigkeitenblockID?.endeZeit ?? "";
+    endeZeit.value = activity.taetigkeitenblockID?.endeZeit ?? "";
 
-    homeoffice.value =
-      activity.homeoffice ?? false;
+    homeoffice.value = activity.homeoffice ?? false;
   },
   {
     immediate: true,
