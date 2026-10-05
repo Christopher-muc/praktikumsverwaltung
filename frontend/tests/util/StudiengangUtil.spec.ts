@@ -35,15 +35,18 @@ describe("StudiengangUtil", () => {
 
   describe("getAddedStudiengangIds", () => {
     it("returns newly added Studiengang IDs", () => {
-      const original = [{ studiengangNr: 1 }];
-      const current = [{ studiengangNr: 1 }, { studiengangNr: 2 }];
+      const original = [{ studiengangNr: 1, name: "Informatik" }];
+      const current = [
+        { studiengangNr: 1, name: "Informatik" },
+        { studiengangNr: 2, name: "Wirtschaftsinformatik" },
+      ];
 
       expect(getAddedStudiengangIds(current, original)).toEqual([2]);
     });
 
     it("returns an empty array if nothing was added", () => {
-      const original = [{ studiengangNr: 1 }];
-      const current = [{ studiengangNr: 1 }];
+      const original = [{ studiengangNr: 1, name: "Informatik" }];
+      const current = [{ studiengangNr: 1, name: "Informatik" }];
 
       expect(getAddedStudiengangIds(current, original)).toEqual([]);
     });
@@ -51,15 +54,18 @@ describe("StudiengangUtil", () => {
 
   describe("getRemovedStudiengangIds", () => {
     it("returns removed Studiengang IDs", () => {
-      const original = [{ studiengangNr: 1 }, { studiengangNr: 2 }];
-      const current = [{ studiengangNr: 1 }];
+      const original = [
+        { studiengangNr: 1, name: "Informatik" },
+        { studiengangNr: 2, name: "Wirtschaftsinformatik" },
+      ];
+      const current = [{ studiengangNr: 1, name: "Informatik" }];
 
       expect(getRemovedStudiengangIds(current, original)).toEqual([2]);
     });
 
     it("returns an empty array if nothing was removed", () => {
-      const original = [{ studiengangNr: 1 }];
-      const current = [{ studiengangNr: 1 }];
+      const original = [{ studiengangNr: 1, name: "Informatik" }];
+      const current = [{ studiengangNr: 1, name: "Informatik" }];
 
       expect(getRemovedStudiengangIds(current, original)).toEqual([]);
     });

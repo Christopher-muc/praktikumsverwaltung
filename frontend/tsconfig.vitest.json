@@ -3,7 +3,20 @@
   "exclude": [],
   "compilerOptions": {
     "tsBuildInfoFile": "./cache/tsconfig.vitest.tsbuildinfo",
-    "types": ["node", "vitest/jsdom"]
+    "types": [
+      "node",
+      "vitest/jsdom",
+      "unplugin-fonts/client",
+      "@intlify/unplugin-vue-i18n/messages"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts"]
+  "include": [
+    "env.d.ts",
+    "declarations.d.ts",
+    "router.d.ts",
+    "route-map.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "tests/**/*.ts"
+  ]
 }

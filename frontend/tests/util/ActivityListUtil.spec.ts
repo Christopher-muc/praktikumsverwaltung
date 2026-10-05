@@ -63,7 +63,7 @@ describe("ActivityListUtils", () => {
       const result = filterAndSortActivities(activities, selectedDate);
 
       expect(result).toHaveLength(1);
-      expect(result[0].taetigkeitenblockID?.beginnZeit).toBe("08:00");
+      expect(result.at(0)?.taetigkeitenblockID?.beginnZeit).toBe("08:00");
     });
 
     it("sorts activities by start time", () => {
