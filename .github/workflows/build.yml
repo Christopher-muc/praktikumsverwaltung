@@ -58,7 +58,7 @@ jobs:
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@54b32c7d11363cad45838c9a3d8a8560b93f0e8c
         with:
           app-path: ${{ matrix.app-path }}
-          npm-ci-parameter: ""
+          node-version: "24.11.1"
 
       - id: maven
         if: ${{ hashFiles(format('./{0}/pom.xml', matrix.app-path)) != '' }}
