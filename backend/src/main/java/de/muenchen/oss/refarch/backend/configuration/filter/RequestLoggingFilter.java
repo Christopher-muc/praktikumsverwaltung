@@ -15,33 +15,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(RequestLoggingFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RequestLoggingFilter.class);
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         LOG.info(
                 "BACKEND REQUEST: method={} uri={} query={}",
                 request.getMethod(),
                 request.getRequestURI(),
-                request.getQueryString()
-        );
+                request.getQueryString());
 
         LOG.info("=== HEADERS ===");
 
         Collections.list(request.getHeaderNames())
-                .forEach(headerName ->
-                        LOG.info(
-                                "{}: {}",
-                                headerName,
-                                request.getHeader(headerName)
-                        )
-                );
+                .forEach(headerName -> LOG.info(
+                        "{}: {}",
+                        headerName,
+                        request.getHeader(headerName)));
 
         LOG.info("=== COOKIES ===");
 
@@ -52,8 +46,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
                 LOG.info(
                         "{}={}",
                         cookie.getName(),
-                        cookie.getValue()
-                );
+                        cookie.getValue());
             }
         }
 
