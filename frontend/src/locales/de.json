@@ -2,8 +2,7 @@
   "app": {
     "name": {
       "part1": "Praktikumsverwaltung",
-      "part2": "",
-      "full": "@:app.name.part1@:app.name.part2"
+      "part2": ""
     }
   },
   "common": {
