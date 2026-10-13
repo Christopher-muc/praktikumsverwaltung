@@ -1,0 +1,147 @@
+
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Release version (e.g. 1.2.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Validate version
+        env:
+          VERSION: ${{ inputs.releaseVersion }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+
+          if git rev-parse "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "Release already exists"
+            exit 1
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.1'
+
+      - name: Update backend version
+        working-directory: backend
+        env:
+          VERSION: ${{ inputs.releaseVersion }}
+        run: |
+          mvn -B versions:set \
+            -DnewVersion="$VERSION" \
+            -DgenerateBackupPoms=false
+
+      - name: Update frontend version
+        working-directory: frontend
+        env:
+          VERSION: ${{ inputs.releaseVersion }}
+        run: |
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      - name: Commit and tag
+        id: version
+        env:
+          VERSION: ${{ inputs.releaseVersion }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -u backend frontend
+          git commit -m "chore: release v$VERSION"
+          git push origin HEAD:dev
+
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app-path: backend
+          - app-path: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version.outputs.tag }}
+
+      - id: node
+        if: ${{ matrix.app-path == 'frontend' }}
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@54b32c7d11363cad45838c9a3d8a8560b93f0e8c
+        with:
+          app-path: frontend
+          node-version: "24.11.1"
+
+      - id: maven
+        if: ${{ matrix.app-path == 'backend' }}
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@54b32c7d11363cad45838c9a3d8a8560b93f0e8c
+        with:
+          app-path: backend
+
+      - name: Build and push image
+        uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@54b32c7d11363cad45838c9a3d8a8560b93f0e8c
+        with:
+          path: ${{ matrix.app-path }}
+          artifact-name: ${{ join(steps.*.outputs.artifact-name) }}
+          image-name: ${{ matrix.app-path }}
+          image-tags: |
+            type=raw,value=${{ needs.version.outputs.tag }}
+          platforms: "linux/amd64,linux/arm64"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+          registry-username: ${{ github.actor }}
+
+  github-release:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          gh release create "$TAG" \
+            --title "Release $TAG" \
+            --generate-notes \
+            --verify-tag
