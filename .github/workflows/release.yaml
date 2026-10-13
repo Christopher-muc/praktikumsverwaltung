@@ -66,7 +66,9 @@ jobs:
         env:
           VERSION: ${{ inputs.releaseVersion }}
         run: |
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          npm version "$VERSION" \
+            --no-git-tag-version \
+            --allow-same-version
 
       - name: Commit and tag
         id: version
@@ -142,6 +144,7 @@ jobs:
           TAG: ${{ needs.version.outputs.tag }}
         run: |
           gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
             --title "Release $TAG" \
             --generate-notes \
             --verify-tag
