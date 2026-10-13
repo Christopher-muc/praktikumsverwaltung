@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: main
           fetch-depth: 0
 
       - name: Validate version
@@ -78,7 +78,7 @@ jobs:
 
           git add -u backend frontend
           git commit -m "chore: release v$VERSION"
-          git push origin HEAD:dev
+          git push origin HEAD:main
 
           git tag "v$VERSION"
           git push origin "v$VERSION"
